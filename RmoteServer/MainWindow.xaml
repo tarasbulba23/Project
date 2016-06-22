@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RmoteServer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" MinWidth="525" MinHeight="350">
+        Title="MainWindow" Height="350" Width="525" MinWidth="525" MinHeight="350" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="9*"/>
+            <RowDefinition Height="12*"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>

@@ -35,26 +35,86 @@ namespace RemoteClient
 
         //private IPEndPoint ipEndPoint;
         private UdpClient udpClient = new UdpClient();
+        private IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 34000);
+
+        private UdpClient receivingUdpClient = new UdpClient(34001);
+        IPEndPoint sendIpEndPoint = null;
 
         private long quality;
 
-        private IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 34000);
+        Thread sendF, procLisen, procStart, lisenF;
 
         public MainWindow()
         {
 
             InitializeComponent();
 
-            quality = Convert.ToInt64(comboBox.SelectionBoxItem.ToString());
+            quality = 100;
+        }
 
 
-            //byte[] lst = Encoding.UTF8.GetBytes("");
-            //udpClient.Send(lst, lst.Length, ipEndPoint);
+        public void sendFirst()
+        {
+            String host = System.Net.Dns.GetHostName();
+            // Получение ip-адреса.
+            System.Net.IPAddress ip = Dns.GetHostByName(host).AddressList[0];
 
-            //Thread tRec = new Thread(new ThreadStart(lisen));
-            //tRec.Start();
+            byte[] lst = Encoding.UTF8.GetBytes(ip.ToString());
 
-            //InitializeComponent();
+            while (true)
+            {
+                udpClient.Send(lst, lst.Length, ipEndPoint);
+                //Console.WriteLine("send ip "+ lst[0]);
+            }            
+        }
+
+        public void lisFirst()
+        {
+            byte[] lst1;
+            bool b = true;
+            try
+            {
+                //sendIpEndPoint = ipEndPoint;
+                //sendIpEndPoint.Port = 34001;
+                while (b)
+                {
+
+                    lst1 = receivingUdpClient.Receive(ref sendIpEndPoint);
+                    string returnData = Encoding.UTF8.GetString(lst1);
+                    Console.WriteLine(returnData);
+                    if (returnData == "OK")
+                    {
+                        try
+                        {
+                            sendF.Abort();
+                            sendF.Join(100);
+                            //receivingUdpClient.Close();
+                            b = false;
+                        }
+                        catch { }
+
+                    }
+                }
+            }
+            catch { }
+
+
+
+            /*Dispatcher.BeginInvoke(new ThreadStart(delegate {
+                submit.IsEnabled = true;
+            }));*/
+
+            //Thread.CurrentThread.Abort();
+
+
+
+            //lisenF.Abort();
+
+            procLisen = new Thread(new ThreadStart(start));
+            procLisen.Start();
+            procStart = new Thread(new ThreadStart(lisen));
+            procStart.Start();
+
         }
 
         internal const int EWX_REBOOT = 0x00000002;
@@ -62,9 +122,9 @@ namespace RemoteClient
         internal const int EWX_LOGOFF = 0x00000000;
         public void lisen()
         {
-            UdpClient receivingUdpClient = new UdpClient(34001);
+            //UdpClient receivingUdpClient = new UdpClient(34001);
 
-            IPEndPoint RemoteIpEndPoint = null;
+            //IPEndPoint RemoteIpEndPoint = null;
 
             bool b = true;
 
@@ -74,11 +134,12 @@ namespace RemoteClient
                 while (b)
                 {
                     // Ожидание дейтаграммы
-                    byte[] receiveBytes = receivingUdpClient.Receive(
-                       ref RemoteIpEndPoint);
+                    byte[] receiveBytes = receivingUdpClient.Receive(ref sendIpEndPoint);
 
                     // Преобразуем и отображаем данные
                     string returnData = Encoding.UTF8.GetString(receiveBytes);
+
+                    Console.WriteLine("what do " + returnData);
 
                     if (returnData == "Powerdown")
                     {
@@ -108,84 +169,50 @@ namespace RemoteClient
 
         }
 
-        /// <summary>
+        
         public void start()
         {
+            lisenF.Abort();
+            lisenF.Join(100);
 
-            Bitmap BackGround = new System.Drawing.Bitmap(width, height);
 
-            Graphics graphics = Graphics.FromImage(BackGround);
+            Bitmap BackGround = new Bitmap(width, height);
+            //BackGround.Dispose();
+
+            //Graphics graphics = Graphics.FromImage(BackGround);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            //FileStream fs;
+            FileStream fs;
+            int coun = 0;
 
             while (true)
             {
 
-                if (sw.ElapsedMilliseconds > 1000/3)
+                if (sw.ElapsedMilliseconds > 1000/6)
                 {
 
-                    graphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
+                    //graphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
+                    BackGround = CaptureScreen.CaptureDesktopWithCursor();
                     byte[] bytes = VariousQuality(BackGround, quality);
 
                     List<byte[]> lst = CutMsg(bytes);
+
                     for (int i = 0; i < lst.Count; i++)
                     {
                         // Отправляем картинку клиенту
                         udpClient.Send(lst[i], lst[i].Length, ipEndPoint);
                     }
                     //Console.WriteLine(ipEndPoint.ToString());
-                //fs = new FileStream("temp.png", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                //fs = new FileStream("temp"+coun+".png", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                 //fs.Write(bytes, 0, bytes.Length);
+                    coun++;
                 }
             }
 
+            udpClient.Close();
 
-            /*udpClient = new UdpClient();
-
-            Bitmap BackGround = new System.Drawing.Bitmap(width, height);
-
-            Graphics graphics = Graphics.FromImage(BackGround);
-
-            /*while (true)
-            {
-                CaptureScreen.CaptureDesktop();
-
-                // Получаем изображение в виде массива байтов
-                //byte[] bytes = ConvertToByte(BackGround);
-                List<byte[]> lst = CutMsg(bytes);
-                for (int i = 0; i < lst.Count; i++)
-                {
-                    // Отправляем картинку клиенту
-                    udpClient.Send(lst[i], lst[i].Length, ipEndPoint);
-                }
-            }*
-
-
-            while (true)
-            {
-                    //BackGround = CaptureScreen.CaptureDesktopWithCursor();
-                    graphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
-                    byte[] bytes = VariousQuality(BackGround, quality);
-
-                    List<byte[]> lst = CutMsg(bytes);
-                    for (int i = 0; i < lst.Count; i++)
-                    {
-                        // Отправляем картинку клиенту
-                        udpClient.Send(lst[i], lst[i].Length, ipEndPoint);
-                    }
-               /* for (int i = 0; i <= bytes.Length; i++)
-                {
-                    System.Console.WriteLine(bytes[i]);
-                }
-
-                if (System.)
-                {
-
-                }*
-            }*/
         }
 
         private List<byte[]> CutMsg(byte[] bt)
@@ -213,14 +240,14 @@ namespace RemoteClient
             return msg;
         }
 
-        private byte[] VariousQuality(System.Drawing.Image original, long quality)
+        private static byte[] VariousQuality(System.Drawing.Image original, long quality)
         {
 
             ImageCodecInfo jpgEncoder = null;
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
             foreach (ImageCodecInfo codec in codecs)
             {
-                if (codec.FormatID == ImageFormat.Png.Guid)
+                if (codec.FormatID == ImageFormat.Jpeg.Guid)
                 {
                     jpgEncoder = codec;
                     break;
@@ -250,7 +277,26 @@ namespace RemoteClient
         {
             // ... Get the ComboBox.
             var comboBox = sender as ComboBox;
-            long.TryParse(comboBox.SelectedItem as string, out quality);
+            string data = comboBox.SelectedIndex.ToString();
+            Console.WriteLine(data+"   aaa");
+
+            if (comboBox.SelectedIndex == 0)
+            {
+                quality = 10;
+            }
+            else if (comboBox.SelectedIndex == 1)
+            {
+                quality = 50;
+            }
+            else if (comboBox.SelectedIndex == 2)
+            {
+                quality = 100;
+            }
+            else
+            {
+                quality = 100;
+            }
+            //long.TryParse(comboBox.SelectionBoxItem as string, out quality);
         }
 
         private void submit_Click(object sender, RoutedEventArgs e)
@@ -260,9 +306,12 @@ namespace RemoteClient
                 ipEndPoint.Address = IPAddress.Parse(ip.Text);
                 ipEndPoint.Port = 34000;
                 WindowState = WindowState.Minimized;
-                Thread tRec = new Thread(new ThreadStart(start));
-                tRec.Start();
+                sendF = new Thread(new ThreadStart(sendFirst));
+                sendF.Start();
+                lisenF = new Thread(new ThreadStart(lisFirst));
+                lisenF.Start();
                 submit.IsEnabled = false;
+                ip.IsEnabled = false;
                 //Run();
             }
             else
@@ -272,35 +321,24 @@ namespace RemoteClient
             }
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            try
+            {
+                procLisen.Abort();
+                procLisen.Join(10);
 
-            try { 
+                procStart.Abort();
+                procStart.Join(10);
+
                 udpClient.Close();
+                receivingUdpClient.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
             }
         }
-
-        /*public int IP
-{
-  get
-  {
-      return nazwisko;
-  }
-  set
-  {
-      if (value.Length > 20)
-// zgłoszenie błędu
-else
-          nazwisko = value;
-  }
-}*/
-        /// </summary>
-
-
     }
 
     class ChangePC
