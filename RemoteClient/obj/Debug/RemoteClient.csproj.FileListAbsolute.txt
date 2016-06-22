@@ -1,0 +1,17 @@
+C:\Users\FuckYou\Desktop\a\RemoteClient\bin\Debug\RemoteClient.exe.config
+C:\Users\FuckYou\Desktop\a\RemoteClient\bin\Debug\RemoteClient.exe
+C:\Users\FuckYou\Desktop\a\RemoteClient\bin\Debug\RemoteClient.pdb
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.csprojResolveAssemblyReference.cache
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\MainWindow.g.cs
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\App.g.cs
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient_MarkupCompile.cache
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient_MarkupCompile.lref
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\MainWindow.baml
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.g.resources
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.Properties.Resources.resources
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.csproj.GenerateResource.Cache
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.exe
+C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.pdb
+C:\Users\FuckYou\Desktop\Project\RemoteClient\bin\Debug\RemoteClient.exe.config
+C:\Users\FuckYou\Desktop\Project\RemoteClient\obj\Debug\RemoteClient.exe
+C:\Users\FuckYou\Desktop\Project\RemoteClient\obj\Debug\RemoteClient.pdb

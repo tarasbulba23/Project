@@ -1,0 +1,29 @@
+﻿<Window x:Class="RemoteClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RemoteClient"
+        mc:Ignorable="d"
+        Title="RemoteClient" Height="150" Width="250" MinWidth="250" MinHeight="150" MaxWidth="250" MaxHeight="150" FlowDirection="LeftToRight" WindowState="Normal" ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="SingleBorderWindow" Visibility="Visible" Closing="Window_Closing">
+    <Grid Visibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="0,2*" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Grid.Row="0" Content="Set IP"/>
+        <Label Grid.Column="0" Grid.Row="1" Content="Set Quality"/>
+        <TextBox x:Name="ip" Grid.Column="1" Grid.Row="0" Text="127.0.0.1"/>
+        <ComboBox x:Name="comboBox" Grid.Column="1" Grid.Row="1" SelectionChanged="comboBox_SelectionChanged">
+            <ComboBoxItem>Low</ComboBoxItem>
+            <ComboBoxItem>Medium</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Hight</ComboBoxItem>
+        </ComboBox>
+        <Button x:Name="submit" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Content="Submit" Click="submit_Click"/>
+    </Grid>
+</Window>

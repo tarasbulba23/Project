@@ -1,0 +1,14 @@
+C:\Users\FuckYou\Desktop\a\RmoteServer\bin\Debug\RmoteServer.exe.config
+C:\Users\FuckYou\Desktop\a\RmoteServer\bin\Debug\RmoteServer.exe
+C:\Users\FuckYou\Desktop\a\RmoteServer\bin\Debug\RmoteServer.pdb
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.csprojResolveAssemblyReference.cache
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\MainWindow.g.cs
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\App.g.cs
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer_MarkupCompile.cache
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer_MarkupCompile.lref
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\MainWindow.baml
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.g.resources
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.Properties.Resources.resources
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.csproj.GenerateResource.Cache
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.exe
+C:\Users\FuckYou\Desktop\a\RmoteServer\obj\Debug\RmoteServer.pdb
