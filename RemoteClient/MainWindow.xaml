@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteClient"
         mc:Ignorable="d"
-        Title="RemoteClient" Height="150" Width="250" MinWidth="250" MinHeight="150" MaxWidth="250" MaxHeight="150" FlowDirection="LeftToRight" WindowState="Normal" ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="SingleBorderWindow" Visibility="Visible" Closing="Window_Closing">
+        Title="RemoteClient" Height="150" Width="250" MinWidth="250" MinHeight="150" MaxWidth="250" MaxHeight="151" FlowDirection="LeftToRight" WindowState="Normal" ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="SingleBorderWindow" Visibility="Visible" Closed="Window_Closed">
     <Grid Visibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -20,9 +20,16 @@
         <Label Grid.Column="0" Grid.Row="1" Content="Set Quality"/>
         <TextBox x:Name="ip" Grid.Column="1" Grid.Row="0" Text="127.0.0.1"/>
         <ComboBox x:Name="comboBox" Grid.Column="1" Grid.Row="1" SelectionChanged="comboBox_SelectionChanged">
-            <ComboBoxItem>Low</ComboBoxItem>
-            <ComboBoxItem>Medium</ComboBoxItem>
-            <ComboBoxItem IsSelected="True">Hight</ComboBoxItem>
+            <ComboBoxItem>10</ComboBoxItem>
+            <ComboBoxItem>20</ComboBoxItem>
+            <ComboBoxItem>30</ComboBoxItem>
+            <ComboBoxItem>40</ComboBoxItem>
+            <ComboBoxItem>50</ComboBoxItem>
+            <ComboBoxItem>60</ComboBoxItem>
+            <ComboBoxItem>70</ComboBoxItem>
+            <ComboBoxItem>80</ComboBoxItem>
+            <ComboBoxItem>90</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">100</ComboBoxItem>
         </ComboBox>
         <Button x:Name="submit" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Content="Submit" Click="submit_Click"/>
     </Grid>
