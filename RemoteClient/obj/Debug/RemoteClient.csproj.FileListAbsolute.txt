@@ -12,3 +12,6 @@ C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.Properties.Resour
 C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.csproj.GenerateResource.Cache
 C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.exe
 C:\Users\FuckYou\Desktop\a\RemoteClient\obj\Debug\RemoteClient.pdb
+C:\Users\FuckYou\Desktop\Project\RemoteClient\bin\Debug\RemoteClient.exe.config
+C:\Users\FuckYou\Desktop\Project\RemoteClient\obj\Debug\RemoteClient.exe
+C:\Users\FuckYou\Desktop\Project\RemoteClient\obj\Debug\RemoteClient.pdb
