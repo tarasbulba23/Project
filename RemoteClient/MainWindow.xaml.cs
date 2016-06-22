@@ -412,5 +412,4 @@ namespace RemoteClient
             ok = ExitWindowsEx(flg, 0);
         }
     }
-
 }
