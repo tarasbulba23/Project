@@ -5,35 +5,27 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RemoteClient
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+	/// <summary>
+    /// Logic for interaction MainWindow.xaml
     /// </summary>
+    /// <permission>public</permission>
+    /// <remarks>Inheritance of the class Window</remarks>
     public partial class MainWindow : Window
     {
 
         public int width = (int)SystemParameters.PrimaryScreenWidth;
         public int height = (int)SystemParameters.PrimaryScreenHeight;
-
-        //private IPEndPoint ipEndPoint;
+        
         private UdpClient udpClient = new UdpClient();
         private IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 34000);
 
@@ -43,52 +35,65 @@ namespace RemoteClient
         private long quality;
 
         Thread sendF, procLisen, procStart, lisenF;
-
+		
+		/// <summary>
+        /// Starting point of the program
+        /// </summary>
+        /// <permission>public</permission>
+        /// <returns>Void</returns>
         public MainWindow()
         {
-
             InitializeComponent();
 
             quality = 100;
         }
 
-
+		/// <summary>
+        /// Sends the message until it receives confirmation from the server
+        /// </summary>
+        /// <permission>public</permission>
+        /// <remarks>When server sent message, this theard has stop</remarks>
+        /// <param>No required params</param>
+        /// <returns>Void</returns>
         public void sendFirst()
         {
             String host = System.Net.Dns.GetHostName();
-            // Получение ip-адреса.
-            System.Net.IPAddress ip = Dns.GetHostByName(host).AddressList[0];
+            IPAddress ip = Dns.GetHostByName(host).AddressList[0];
 
             byte[] lst = Encoding.UTF8.GetBytes(ip.ToString());
 
             while (true)
             {
                 udpClient.Send(lst, lst.Length, ipEndPoint);
-                //Console.WriteLine("send ip "+ lst[0]);
             }            
         }
 
+		/// <summary>
+        /// Waiting for a response from the server
+        /// </summary>
+        /// <exception>All posible exception</exception>
+        /// <permission>public</permission>
+        /// <remarks>When server send response, starts new theard function "lisen" and "start"</remarks>
+        /// <param>No required params</param>
+        /// <returns>Void</returns>
         public void lisFirst()
         {
             byte[] lst1;
             bool b = true;
             try
             {
-                //sendIpEndPoint = ipEndPoint;
-                //sendIpEndPoint.Port = 34001;
                 while (b)
                 {
 
                     lst1 = receivingUdpClient.Receive(ref sendIpEndPoint);
                     string returnData = Encoding.UTF8.GetString(lst1);
-                    Console.WriteLine(returnData);
+
                     if (returnData == "OK")
                     {
                         try
                         {
                             sendF.Abort();
                             sendF.Join(100);
-                            //receivingUdpClient.Close();
                             b = false;
                         }
                         catch { }
@@ -98,18 +103,6 @@ namespace RemoteClient
             }
             catch { }
 
-
-
-            /*Dispatcher.BeginInvoke(new ThreadStart(delegate {
-                submit.IsEnabled = true;
-            }));*/
-
-            //Thread.CurrentThread.Abort();
-
-
-
-            //lisenF.Abort();
-
             procLisen = new Thread(new ThreadStart(start));
             procLisen.Start();
             procStart = new Thread(new ThreadStart(lisen));
@@ -117,15 +110,19 @@ namespace RemoteClient
 
         }
 
+		/// <summary>
+        /// When the server sends a message to a computer, he or shuts down or restart or logoff
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>public</permission>
+        /// <remarks>Using Win32API</remarks>
+        /// <param>No required params</param>
+        /// <returns>Void</returns>
         internal const int EWX_REBOOT = 0x00000002;
         internal const int EWX_SHUTDOWN = 0x00000001;
         internal const int EWX_LOGOFF = 0x00000000;
         public void lisen()
         {
-            //UdpClient receivingUdpClient = new UdpClient(34001);
-
-            //IPEndPoint RemoteIpEndPoint = null;
-
             bool b = true;
 
             try
@@ -133,13 +130,9 @@ namespace RemoteClient
 
                 while (b)
                 {
-                    // Ожидание дейтаграммы
                     byte[] receiveBytes = receivingUdpClient.Receive(ref sendIpEndPoint);
 
-                    // Преобразуем и отображаем данные
                     string returnData = Encoding.UTF8.GetString(receiveBytes);
-
-                    Console.WriteLine("what do " + returnData);
 
                     if (returnData == "Powerdown")
                     {
@@ -156,44 +149,38 @@ namespace RemoteClient
                         ChangePC.DoExitWin(EWX_LOGOFF);
                         b = false;
                     }
-
-
-                    //Console.WriteLine(" --> " + returnData.ToString());
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+                Console.WriteLine("Fatal Error: " + ex.ToString() + "\n  " + ex.Message);
             }
 
 
         }
 
-        
+        /// <summary>
+        /// Make screenshot and resive to server program
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>public</permission>
+        /// <param>No required params</param>
+        /// <returns>Void</returns>
         public void start()
         {
             lisenF.Abort();
             lisenF.Join(100);
-
-
+            
             Bitmap BackGround = new Bitmap(width, height);
-            //BackGround.Dispose();
-
-            //Graphics graphics = Graphics.FromImage(BackGround);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-            FileStream fs;
-            int coun = 0;
 
             while (true)
             {
 
                 if (sw.ElapsedMilliseconds > 1000/6)
                 {
-
-                    //graphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
                     BackGround = CaptureScreen.CaptureDesktopWithCursor();
                     byte[] bytes = VariousQuality(BackGround, quality);
 
@@ -201,13 +188,8 @@ namespace RemoteClient
 
                     for (int i = 0; i < lst.Count; i++)
                     {
-                        // Отправляем картинку клиенту
                         udpClient.Send(lst[i], lst[i].Length, ipEndPoint);
                     }
-                    //Console.WriteLine(ipEndPoint.ToString());
-                //fs = new FileStream("temp"+coun+".png", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-                //fs.Write(bytes, 0, bytes.Length);
-                    coun++;
                 }
             }
 
@@ -215,6 +197,12 @@ namespace RemoteClient
 
         }
 
+		/// <summary>
+        /// Breaks byte array to packages of 64K
+        /// </summary>
+        /// <permission>private</permission>
+        /// <param name="bt">Takes pictures in a byte array</param>
+        /// <returns>Returns packages as list array</returns>
         private List<byte[]> CutMsg(byte[] bt)
         {
             int Lenght = bt.Length;
@@ -222,13 +210,11 @@ namespace RemoteClient
             List<byte[]> msg = new List<byte[]>();
 
             MemoryStream memoryStream = new MemoryStream();
-            // Записываем в первые 2 байта количество пакетов
             memoryStream.Write(BitConverter.GetBytes((short)((Lenght / 65500) + 1)), 0, 2);
-            // Далее записываем первый пакет
             memoryStream.Write(bt, 0, bt.Length);
 
             memoryStream.Position = 0;
-            // Пока все пакеты не разделили - делим КЭП
+			
             while (Lenght > 0)
             {
                 temp = new byte[65500];
@@ -240,9 +226,16 @@ namespace RemoteClient
             return msg;
         }
 
+		/// <summary>
+        /// Set photo quality and conver to bytes array
+        /// </summary>
+        /// <exception>All posible exception</exception>
+        /// <permission>private</permission>
+        /// <param name="original">Takes image in format System.Drawing.Image</param>
+        /// <param name="quality">Takes long type</param>
+        /// <returns>Return bytes array</returns>
         private static byte[] VariousQuality(System.Drawing.Image original, long quality)
         {
-
             ImageCodecInfo jpgEncoder = null;
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
             foreach (ImageCodecInfo codec in codecs)
@@ -269,17 +262,20 @@ namespace RemoteClient
             }
             else
             {
-                throw new Exception("Потеря");
+                throw new Exception("Error");
             }
         }
 
+		/// <summary>
+        /// Set quality image in real world time
+        /// </summary>
+        /// <permission>private</permission>
+		/// <remarks>Works in asynchronous mode</remarks>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // ... Get the ComboBox.
-            var comboBox = sender as ComboBox;
-            string data = comboBox.SelectedIndex.ToString();
-            Console.WriteLine(data+"   aaa");
-
             if (comboBox.SelectedIndex == 0)
             {
                 quality = 10;
@@ -296,9 +292,15 @@ namespace RemoteClient
             {
                 quality = 100;
             }
-            //long.TryParse(comboBox.SelectionBoxItem as string, out quality);
         }
 
+		/// <summary>
+        /// User should write IP server, where data will be sent
+        /// </summary>
+        /// <permission>private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void submit_Click(object sender, RoutedEventArgs e)
         {
             if (ip.Text != "")
@@ -312,15 +314,21 @@ namespace RemoteClient
                 lisenF.Start();
                 submit.IsEnabled = false;
                 ip.IsEnabled = false;
-                //Run();
             }
             else
             {
-                MessageBox.Show("Требуется ввести имя", "Ошибка при вводе имени", MessageBoxButton.OK, MessageBoxImage.Error);
-                //Run();
+                MessageBox.Show("You should to write IP", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+		/// <summary>
+        /// On closing window, stop all proces, and closing connection
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
@@ -336,11 +344,14 @@ namespace RemoteClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+                Console.WriteLine("Fatal Error: " + ex.ToString() + "\n  " + ex.Message);
             }
         }
     }
 
+	/// <summary>
+	/// This class takes Win32API
+	/// </summary>
     class ChangePC
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -380,6 +391,12 @@ namespace RemoteClient
         internal const int EWX_POWEROFF = 0x00000008;
         internal const int EWX_FORCEIFHUNG = 0x00000010;
 
+		/// <summary>
+        /// Reboot or Power Down or Log Off
+        /// </summary>
+        /// <permission>public</permission>
+        /// <param name="flg">What do in this PC</param>
+        /// <returns>Void</returns>
         public static void DoExitWin(int flg)
         {
             bool ok;
@@ -396,6 +413,9 @@ namespace RemoteClient
         }
     }
 
+	/// <summary>
+	/// This class makes a screen shot
+	/// </summary>
     class CaptureScreen
     {
         //This structure shall be used to keep the size of the screen.
@@ -405,6 +425,12 @@ namespace RemoteClient
             public int cy;
         }
 
+		/// <summary>
+        /// Takes Screen shot without mouse
+        /// </summary>
+        /// <permission>Public</permission>
+        /// <param>No required params</param>
+        /// <returns>Screen shot image in format Bitmap</returns>
         public static Bitmap CaptureDesktop()
         {
             SIZE size;
@@ -440,7 +466,13 @@ namespace RemoteClient
 
         }
 
-
+		/// <summary>
+        /// Takes mouse Screen shot 
+        /// </summary>
+        /// <permission>Public</permission>
+        /// <param name="x">Vertical mouse coordinates</param>
+        /// <param name="y">Horisontal mouse coordinates</param>
+        /// <returns>Screen shot mouse in format Bitmap</returns>
         public static Bitmap CaptureCursor(ref int x, ref int y)
         {
             Bitmap bmp;
@@ -468,6 +500,12 @@ namespace RemoteClient
             return null;
         }
 
+		/// <summary>
+        /// Takes Screen shot with mouse
+        /// </summary>
+        /// <permission>Public</permission>
+        /// <param>No required params</param>
+        /// <returns>Screen shot image in format Bitmap</returns>
         public static Bitmap CaptureDesktopWithCursor()
         {
             int cursorX = 0;

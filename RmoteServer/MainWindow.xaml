@@ -15,10 +15,12 @@
             <ColumnDefinition />
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Image x:Name="img" Grid.ColumnSpan="3" Grid.Row="0"/>
+        <Image x:Name="img" Grid.ColumnSpan="4" Grid.Row="0"/>
         <Button x:Name="powerdown" Grid.Column="0" Grid.Row="1" Content="Powerdown" Click="powerdown_Click"/>
-        <Button x:Name="reset" Grid.Column="1" Grid.Row="1" Content="Reset" Click="reset_Click"/>
+        <Button x:Name="reset" Grid.Column="1" Grid.Row="1" Content="Restart" Click="reset_Click"/>
         <Button x:Name="sleep" Grid.Column="2" Grid.Row="1" Content="Sleep" Click="sleep_Click"/>
+        <Label x:Name="myip" Grid.Column="3" Grid.Row="1" />
     </Grid>
 </Window>

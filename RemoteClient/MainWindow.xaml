@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteClient"
         mc:Ignorable="d"
-        Title="RemoteClient" Height="150" Width="250" MinWidth="250" MinHeight="150" MaxWidth="250" MaxHeight="151" FlowDirection="LeftToRight" WindowState="Normal" ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="SingleBorderWindow" Visibility="Visible" Closing="Window_Closing">
+        Title="RemoteClient" Height="150" Width="250" MinWidth="250" MinHeight="150" MaxWidth="250" MaxHeight="150" FlowDirection="LeftToRight" WindowState="Normal" ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="SingleBorderWindow" Visibility="Visible" Closing="Window_Closing">
     <Grid Visibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <Grid.RowDefinitions>
             <RowDefinition />

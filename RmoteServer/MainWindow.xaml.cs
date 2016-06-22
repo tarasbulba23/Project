@@ -1,28 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RmoteServer
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Logic for interaction MainWindow.xaml
     /// </summary>
+    /// <permission>public</permission>
+    /// <remarks>Inheritance of the class Window</remarks>
     public partial class MainWindow : Window
     {
 
@@ -37,37 +28,42 @@ namespace RmoteServer
         private bool key = false;
 
         Thread tRec, tdata;
-        //IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), 34001);
-
-
-        //private static FileStream fs;
 
         int countErorr = 0;
 
+        /// <summary>
+        /// Starting point of the program
+        /// </summary>
+        /// <permission>public</permission>
+        /// <returns>Void</returns>
         public MainWindow()
         {
-
             InitializeComponent();
+
+            myip.Content = Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString();
 
             tRec = new Thread(new ThreadStart(sendOk));
             tRec.Start();
-            
-
         }
 
 
+        /// <summary>
+        /// Resived message from the client, and if correctness message sends a message about the successful delivery
+        /// </summary>
+        /// <permission>public</permission>
+        /// <remarks>Launching a function 'start' in a new thread</remarks>
+        /// <param >No required params</param>
+        /// <returns>Void</returns>
         public void sendOk()
         {
             bool b = true;
             IPAddress address;
-
             
-
             while (b)
             {
                 byte[] data = udpClient.Receive(ref ipEndPoint);
                 string returnData = Encoding.UTF8.GetString(data);
-                Console.WriteLine("ip " + returnData);
+
                 if (IPAddress.TryParse(returnData, out address))
                 {
                     switch (address.AddressFamily)
@@ -86,30 +82,28 @@ namespace RmoteServer
                 }
             }
 
-            
-
-            // Отправляем данные
             byte[] msg = Encoding.UTF8.GetBytes("OK");
             udpServer.Send(msg, msg.Length, RemoteIpEndPoint);
 
-            Thread.Sleep(1000);
-
-            //Thread.CurrentThread.Abort();
+            Thread.Sleep(2000);
 
             tdata = new Thread(new ThreadStart(start));
             tdata.Start();
         }
-        
+
+        /// <summary>
+        /// This function takes packets and writes in memory stream
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>public</permission>
+        /// <remarks>Stops Thread - tRec, that means stop function 'sendOk'</remarks>
+        /// <param>No required params</param>
+        /// <returns>Void</returns>
         public void start()
         {
             tRec.Abort();
             tRec.Join(100);
-            //receiveBytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
-            //BitmapImage imgsource = new BitmapImage();
-            //foreach(udpClient.Receive(ref RemoteIpEndPoint).)
-            //udpClient.Receive(ref RemoteIpEndPoint).GetValue;
-            FileStream fs;
-            int coun = 0;
+
             while (true)
             {
 
@@ -119,53 +113,47 @@ namespace RmoteServer
                     receiveBytes = udpClient.Receive(ref ipEndPoint);
                     memoryStream.Write(receiveBytes, 2, receiveBytes.Length - 2);
 
-                    //ipEndPoint.Address = RemoteIpEndPoint.Address;
-
                     int countMsg = receiveBytes[0] - 1;
                     if (countMsg > 25)
                     {
-                        throw new Exception("Потеря первого пакета");
+                        throw new Exception("Lost first package");
                     }
                     for (int i = 0; i < countMsg; i++)
                     {
                         byte[] bt = udpClient.Receive(ref ipEndPoint);
                         memoryStream.Write(bt, 0, bt.Length);
                     }
-                    
-                    //coun++;
-
-                    //fs = new FileStream("temp"+coun+".png", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    //fs.Write(memoryStream.ToArray(), 0, memoryStream.ToArray().Length);
-                    coun++;
-                    
+                                        
                     Dispatcher.BeginInvoke(new ThreadStart(delegate {
                          ConvertToTexture2D(memoryStream.ToArray());
                     }));
-                    //Dispatcher.DisableProcessing();
 
-                    //fs.Close();
                     memoryStream.Close();
-                    //udpClient.Close();
                 }
                 catch (Exception ex)
                 {
                     countErorr++;
-                    Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+                    Console.WriteLine("Fatal Error: " + ex.ToString() + "\n  " + ex.Message);
                 }
             }
         }
 
+        /// <summary>
+        /// Convert byte array to image, and displays that image
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>Private</permission>
+        /// <remarks>Works in asynchronous mode</remarks>
+        /// <param name="bytes">Image as a byte array</param>
+        /// <returns>Void</returns>
         private void ConvertToTexture2D(byte[] bytes)
         {
-            //MemoryStream memoryStream = new MemoryStream(bytes);
-
             BitmapImage imgsource = new BitmapImage();
 
             using (MemoryStream memoryStream = new MemoryStream(bytes))
             {
                 try
                 {
-
                     imgsource.BeginInit();
                     imgsource.CacheOption = BitmapCacheOption.OnLoad;
                     imgsource.StreamSource = memoryStream;
@@ -176,55 +164,60 @@ namespace RmoteServer
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+                    Console.WriteLine("Fatal Error: " + ex.ToString() + "\n  " + ex.Message);
                 }
             }
         }
 
+        /// <summary>
+        /// When you click on button "Powerdown", sent a message to client program
+        /// </summary>
+        /// <exception>All posible exception</exception>
+        /// <permission>Private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void powerdown_Click(object sender, RoutedEventArgs e)
         {
             try {
-                //UdpClient sendcomand = new UdpClient();
-
-                //IPEndPoint resipEndPoint = new IPEndPoint(IPAddress.Parse(RemoteIpEndPoint.ToString()), 34001);
-
                 byte[] bytes = Encoding.UTF8.GetBytes("Powerdown");
 
-                if (key)//RemoteIpEndPoint.Address.ToString() != null || RemoteIpEndPoint.Address.ToString() != "")
+                if (key)
                 {
-                    // Отправляем данные
                     udpServer.Send(bytes, bytes.Length, RemoteIpEndPoint);
                 }
                 else
                 {
-                    MessageBox.Show("Требуется ввести имя", "Ошибка при вводе имени", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Don`t have connection", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
 
             }
+        }
 
-}
-
+        /// <summary>
+        /// When you click on button "Restart", sent a message to client program
+        /// </summary>
+        /// <exception>All posible exception</exception>
+        /// <permission>Private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void reset_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                //UdpClient sendcomand = new UdpClient();
-
-                //IPEndPoint resipEndPoint = new IPEndPoint(IPAddress.Parse(RemoteIpEndPoint.ToString()), 34001);
-
                 byte[] bytes = Encoding.UTF8.GetBytes("Reset");
 
-                if (key)//RemoteIpEndPoint.Address.ToString() != null || RemoteIpEndPoint.Address.ToString() != "")
+                if (key)
                 {
-                    // Отправляем данные
                     udpServer.Send(bytes, bytes.Length, RemoteIpEndPoint);
                 }
                 else
                 {
-                    MessageBox.Show("Требуется ввести имя", "Ошибка при вводе имени", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Don`t have connection", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
@@ -234,24 +227,27 @@ namespace RmoteServer
 
         }
 
+        /// <summary>
+        /// When you click on button "LogOff", sent a message to client program
+        /// </summary>
+        /// <exception>All posible exception</exception>
+        /// <permission>Private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void sleep_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                //UdpClient sendcomand = new UdpClient();
-
-                //IPEndPoint resipEndPoint = new IPEndPoint(IPAddress.Parse(RemoteIpEndPoint.ToString()), 34001);
-
                 byte[] bytes = Encoding.UTF8.GetBytes("LogOff");
 
-                if (key)//RemoteIpEndPoint.Address.ToString() != null || RemoteIpEndPoint.Address.ToString() != "")
+                if (key)
                 {
-                    // Отправляем данные
                     udpServer.Send(bytes, bytes.Length, RemoteIpEndPoint);
                 }
                 else
                 {
-                    MessageBox.Show("Требуется ввести имя", "Ошибка при вводе имени", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Don`t have connection", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch(Exception ex)
@@ -259,10 +255,16 @@ namespace RmoteServer
 
             }
 
-
-
         }
 
+        /// <summary>
+        /// On closing window, stop all proces, and closing connection
+        /// </summary>
+        /// <exception>All posible exception, and write error in console</exception>
+        /// <permission>private</permission>
+        /// <param name="sender">Default value</param>
+        /// <param name="e">Default value</param>
+        /// <returns>Void</returns>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
@@ -275,7 +277,7 @@ namespace RmoteServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+                Console.WriteLine("Fatal Error: " + ex.ToString() + "\n  " + ex.Message);
             }
         }
     }
